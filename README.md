@@ -7,7 +7,7 @@ tokens, and secrets that need to survive relaunch but must never touch
 ## Install
 
 ```swift
-.package(url: "https://github.com/WykSofts-Inc/KitoKeychain.git", from: "1.0.0"),
+.package(url: "https://github.com/WykSofts-Inc/KitoKeychain.git", from: "1.1.0"),
 ```
 
 ## Samples
@@ -42,6 +42,41 @@ let settingsKeychain = KitoKeychain(service: "com.yourapp.settings")
 ```swift
 try keychain.set(refreshToken, for: "refreshToken", accessibility: .afterFirstUnlockThisDeviceOnly)
 ```
+
+## Secure notes and token vault
+
+```swift
+@State private var vault = KitoSecureVault(service: "com.yourapp.vault")
+
+KitoSecureVaultView(vault: vault, title: "Vault")
+```
+
+Item titles and kinds live in one keychain entry, each secret in its own, read
+only when revealed. Secrets reveal after Face ID / Touch ID (passcode fallback),
+hide again after 20 seconds, and copy to a device-only clipboard that clears
+after a minute. Kinds: secure note, password, access token, API key, card, PIN,
+recovery code — each with a sensible mask.
+
+```swift
+vault.add("KRA iTax PIN", kind: .pin, secret: "4821", detail: "Renews March")
+let pin = vault.secret(for: item)       // gate this yourself outside the view
+vault.delete(item)
+```
+
+## Reveal one secret
+
+```swift
+KitoRevealableSecret("API key", value: apiKey, mask: .partial(prefix: 4, suffix: 4))
+KitoRevealableSecret("Card", mask: .lastFour) { try? keychain.string(for: "card") }
+```
+
+`KitoSecretMask`: `.dots`, `.lastFour`, `.partial(prefix:suffix:)`.
+`KitoRevealGate`: `.deviceOwner` (default), `.none`, `.simulated(allows:)`.
+
+## Previews and tests
+
+`KitoSecureVault(store: KitoInMemorySecretStore())` or `KitoSecureVault.preview([...])`
+keeps everything in memory. Any type conforming to `KitoSecretStore` works as a store.
 
 ## A note on testing this package
 

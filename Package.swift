@@ -13,8 +13,11 @@ let package = Package(
     name: "KitoKeychain",
     platforms: [.iOS(.v17)],
     products: [.library(name: "KitoKeychain", targets: ["KitoKeychain"])],
+    dependencies: [
+        .package(url: "https://github.com/WykSofts-Inc/KitoCore.git", from: "1.1.0"),
+    ],
     targets: [
-        .target(name: "KitoKeychain"),
+        .target(name: "KitoKeychain", dependencies: [.product(name: "KitoCore", package: "KitoCore")]),
         .testTarget(name: "KitoKeychainTests", dependencies: ["KitoKeychain"]),
     ]
 )
