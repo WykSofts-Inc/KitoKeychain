@@ -1,5 +1,7 @@
 # KitoKeychain
 
+**[Documentation](https://wyksofts-inc.github.io/KitoKeychain/documentation/kitokeychain/)**
+
 A small, correct wrapper over Keychain Services — auth tokens, refresh
 tokens, and secrets that need to survive relaunch but must never touch
 `UserDefaults`.
